@@ -6,6 +6,19 @@ from tqdm import tqdm
 from colorama import Fore, Style
 
 
+def convert_bytes_to_readable_format(size):
+    if size >= 1024**3:
+        size = f"{size / 1024**3:.2f} GB"
+    elif size >= 1024**2:
+        size = f"{size / 1024**2:.2f} MB"
+    elif size >= 1024:
+        size = f"{size / 1024:.2f} KB"
+    else:
+        size = f"{size} B"
+
+    return size
+
+
 def total_file_count_and_size():
     total_count = 0
     total_size = 0
@@ -20,17 +33,7 @@ def total_file_count_and_size():
                 total_size += os.path.getsize(os.path.join(root, file))
                 pbar.update(1)
 
-    # converting the total size
-    if total_size >= 1024**3:
-        total_size = f"{total_size / 1024**3:.2f} GB"
-    elif total_size >= 1024**2:
-        total_size = f"{total_size / 1024**2:.2f} MB"
-    elif total_size >= 1024:
-        total_size = f"{total_size / 1024:.2f} KB"
-    else:
-        total_size = f"{total_size} B"
-
-    return total_count, total_size
+    return total_count, convert_bytes_to_readable_format(total_size)
 
 
 def search_file_type_on_os(file_type):
@@ -49,16 +52,7 @@ def search_file_type_on_os(file_type):
                         os.path.join(root, file))
                 pbar.update(1)
 
-    if allocated_space >= 1024**3:
-        allocated_space = f"{allocated_space / 1024**3:.2f} GB"
-    elif allocated_space >= 1024**2:
-        allocated_space = f"{allocated_space / 1024**2:.2f} MB"
-    elif allocated_space >= 1024:
-        allocated_space = f"{allocated_space / 1024:.2f} KB"
-    else:
-        allocated_space = f"{allocated_space} B"
-
-    return count, allocated_space
+    return count, convert_bytes_to_readable_format(allocated_space)
 
 
 if __name__ == '__main__':
