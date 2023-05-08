@@ -53,7 +53,7 @@ def search_file_type_on_os(file_type):
     count = 0
     allocated_space = 0
 
-    print(f"{Fore.RED}Preparing...{Style.RESET_ALL}")
+    print(f"{Fore.RED}Preparing this may take ~ 1 min ...{Style.RESET_ALL}")
     total_count = sum(len(files) for _, _, files in os.walk("/"))
 
     with tqdm(total=total_count, desc=f"Searching for files with extension '{file_type}'") as pbar:
