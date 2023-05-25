@@ -1,6 +1,8 @@
 import os
 import errno
 import platform
+from matplotlib import pyplot as plt
+import numpy as np
 from tqdm import tqdm
 from colorama import Fore, Style
 from multiprocessing import Pool, cpu_count
@@ -65,7 +67,6 @@ def search_file_type_on_os(file_type):
                         pass
                 pbar.update(1)
 
-
     return count, convert_bytes_to_readable_format(allocated_space)
 
 def search_file_type_on_path(file_type, path):
@@ -88,6 +89,45 @@ def search_file_type_on_path(file_type, path):
 
     return count, convert_bytes_to_readable_format(allocated_space)
 
+def get_top_10_largest_files(path):
+    file_paths = []
+    for root, dirs, files in os.walk(path, topdown=True):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+
+    file_sizes = []
+    with Pool(cpu_count()) as p:
+        with tqdm(total=len(file_paths), desc="Calculating file sizes") as pbar:
+            for size in p.imap_unordered(get_file_size, file_paths):
+                file_sizes.append(size)
+                pbar.update()
+
+    largest_files = sorted(zip(file_paths, file_sizes), key=lambda x: x[1], reverse=True)[:10]
+
+    file_names = [os.path.basename(file) for file, _ in largest_files]
+    sizes = [size for _, size in largest_files]
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    y_pos = np.arange(len(file_names))
+
+    ax.barh(y_pos, sizes, align='center', color='blue')
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels([os.path.basename(file) for file in file_names])
+    ax.invert_yaxis()
+    ax.set_xlabel('Size')
+    ax.set_title('Top 10 Largest Files')
+
+    for i, v in enumerate(sizes):
+        ax.text(v + 1, i, f'{convert_bytes_to_readable_format(v)}', color='black', va='center')
+
+    plt.tight_layout()
+    plt.show()
+
+    sorted_file_paths = [file for file, _ in largest_files]
+
+    return sorted_file_paths
+
+
 
 if __name__ == '__main__':
     print(f"\nRunning on OS: {Fore.CYAN} {platform.system()} {platform.release()} {Style.RESET_ALL}")
@@ -97,9 +137,10 @@ if __name__ == '__main__':
         print(f"{Fore.BLUE}{Style.BRIGHT}1.{Style.RESET_ALL} Get total count and size of files on OS")
         print(f"{Fore.BLUE}{Style.BRIGHT}2.{Style.RESET_ALL} Search for files with a specific extension on OS")
         print(f"{Fore.BLUE}{Style.BRIGHT}3.{Style.RESET_ALL} Search for files with a specific extension on a specific directory")
-        print(f"{Fore.BLUE}{Style.BRIGHT}4.{Style.RESET_ALL} Exit\n")
+        print(f"{Fore.BLUE}{Style.BRIGHT}4.{Style.RESET_ALL} Get top 10 largest files on a specific directory")
+        print(f"{Fore.BLUE}{Style.BRIGHT}5.{Style.RESET_ALL} Exit\n")
 
-        choice = input("Enter your choice (1-4): \n")
+        choice = input("Enter your choice (1-5): \n")
 
         if choice == "1":
             total_count, total_size = total_file_count_and_size()
@@ -121,6 +162,15 @@ if __name__ == '__main__':
             print(f"Count of {Fore.GREEN}{Style.BRIGHT}{file_type}{Style.RESET_ALL} files on {Fore.BLUE}{path}{Style.RESET_ALL}: {Fore.MAGENTA}{Style.BRIGHT}{count}{Style.RESET_ALL}")
             print(f"Allocated space for {Fore.GREEN}{Style.BRIGHT}{file_type}{Style.RESET_ALL} files on {Fore.BLUE}{path}{Style.RESET_ALL}: {Fore.MAGENTA}{Style.BRIGHT}{allocated_space}{Style.RESET_ALL}")
         elif choice == "4":
+            print("\n")
+            path = input(f"{Fore.YELLOW}{Style.BRIGHT}Enter path to search in: {Style.RESET_ALL}")
+            largest_files = get_top_10_largest_files(path)
+            print("\n")
+            print(f"{Fore.YELLOW}{Style.BRIGHT}Top 10 largest files on {Fore.BLUE}{path}{Style.RESET_ALL}:")
+            for idx, file in enumerate(largest_files, start=1):
+                print(f"{idx}. {Fore.GREEN}{Style.BRIGHT}{file}{Style.RESET_ALL} - {Fore.MAGENTA}{Style.BRIGHT}{convert_bytes_to_readable_format(get_file_size(file))}{Style.RESET_ALL}")
+
+        elif choice == "5":
             print("\n")
             print(f"{Fore.RED}{Style.BRIGHT}Exiting program...{Style.RESET_ALL}")
             break
