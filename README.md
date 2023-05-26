@@ -61,7 +61,7 @@ To use Cross File Analyzer, open a terminal or command prompt and navigate to th
     This option allows you to search for files with a specific extension in a specific directory. 
     It provides the count and allocated space for the files found.
 
-    To choose this option, enter `3` when prompted and provide the desired file extension and directory path.
+    To choose this option, enter `3` when prompted and provide the desired file extension and path.
     ```
 
 
