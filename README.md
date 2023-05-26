@@ -48,7 +48,7 @@ To use Cross File Analyzer, open a terminal or command prompt and navigate to th
 - Option 2: Search for files with a specific extension on the operating system
     
     ```
-    This option enables you to search for files with a specific extension (e.g., '.pdf') on the operating system. 
+    This option enables you to search for files with a specific extension on the operating system. 
     It provides the count and allocated space for the files found.
 
     To choose this option, enter `2` when prompted and provide the desired file extension.
@@ -58,7 +58,7 @@ To use Cross File Analyzer, open a terminal or command prompt and navigate to th
 - Option 3: Search for files with a specific extension on a specific directory
     
     ```
-    This option allows you to search for files with a specific extension (e.g., '.pdf') in a specific directory. 
+    This option allows you to search for files with a specific extension in a specific directory. 
     It provides the count and allocated space for the files found.
 
     To choose this option, enter `3` when prompted and provide the desired file extension and directory path.
